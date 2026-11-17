@@ -1,3 +1,8 @@
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
 const wedding = {
   couple: "សិរីសួស្តី និង មាលា",
   date: "2027-01-10T16:00:00+07:00",
@@ -5,18 +10,47 @@ const wedding = {
   mapUrl: "https://www.google.com/maps/search/?api=1&query=Sovann+Mongkol+Restaurant+Phnom+Penh"
 };
 
-if ("IntersectionObserver" in window) {
-  document.documentElement.classList.add("motion-ready");
-  const revealObserver = new IntersectionObserver((entries, observer) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("is-visible");
-        observer.unobserve(entry.target);
+if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  const entrance = gsap.timeline({ defaults: { ease: "power3.out", duration: 0.8 } });
+  entrance
+    .from(".eyebrow", { y: 20, autoAlpha: 0 })
+    .from(".hero h1", { y: 24, autoAlpha: 0 }, "-=0.52")
+    .from(".hero-flourish", { scale: 0.7, autoAlpha: 0, duration: 0.6 }, "-=0.52")
+    .from(".hero-date", { y: 14, autoAlpha: 0, duration: 0.65 }, "-=0.38")
+    .from(".hero-bottom", { y: 18, autoAlpha: 0, duration: 0.7 }, "-=0.32");
+
+  gsap.utils.toArray(".section, .footer").forEach((section) => {
+    gsap.from(section, {
+      y: 30,
+      autoAlpha: 0,
+      duration: 0.8,
+      ease: "power2.out",
+      clearProps: "transform,opacity,visibility",
+      scrollTrigger: {
+        trigger: section,
+        start: "top 88%",
+        once: true
       }
     });
-  }, { threshold: 0.12 });
-  document.querySelectorAll(".section, .footer").forEach((section) => revealObserver.observe(section));
+  });
 
+  gsap.from(".photo-card", {
+    y: 22,
+    autoAlpha: 0,
+    scale: 0.97,
+    duration: 0.65,
+    stagger: 0.12,
+    ease: "power2.out",
+    clearProps: "transform,opacity,visibility",
+    scrollTrigger: {
+      trigger: ".gallery",
+      start: "top 86%",
+      once: true
+    }
+  });
+}
+
+if ("IntersectionObserver" in window) {
   const navLinks = document.querySelectorAll(".bottom-nav .nav-item");
   const sectionObserver = new IntersectionObserver((entries) => {
     const visibleSections = entries.filter((entry) => entry.isIntersecting);
